@@ -2,10 +2,11 @@ import { useState } from 'react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import ProductCard from '@/components/ProductCard';
-import { products } from '@/data/products';
+import { useProducts } from '@/contexts/ProductsContext';
 import { Button } from '@/components/ui/button';
 
 const Products = () => {
+  const { products } = useProducts();
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const categories = ['All', ...Array.from(new Set(products.map((p) => p.category)))];
 

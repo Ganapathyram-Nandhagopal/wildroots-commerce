@@ -1,13 +1,48 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Minus, Plus, Trash2, ShoppingBag, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { useCart } from '@/contexts/CartContext';
+import { useOrders } from '@/contexts/OrdersContext';
+import { toast } from 'sonner';
 
 const Cart = () => {
   const { cart, updateQuantity, removeFromCart, cartTotal, clearCart } = useCart();
+  const { addOrder } = useOrders();
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [customerInfo, setCustomerInfo] = useState({
+    name: '',
+    email: '',
+    phone: ''
+  });
+
+  const handleCheckout = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    addOrder({
+      customerName: customerInfo.name,
+      email: customerInfo.email,
+      phone: customerInfo.phone,
+      items: cart.map(item => ({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity
+      })),
+      total: cartTotal
+    });
+
+    clearCart();
+    setCheckoutOpen(false);
+    setCustomerInfo({ name: '', email: '', phone: '' });
+    toast.success('Order placed successfully!');
+  };
 
   if (cart.length === 0) {
     return (
@@ -130,9 +165,57 @@ const Cart = () => {
                   </div>
                 </div>
 
-                <Button size="lg" className="w-full mb-4">
+                <Button size="lg" className="w-full mb-4" onClick={() => setCheckoutOpen(true)}>
                   Proceed to Checkout
                 </Button>
+                
+                <Dialog open={checkoutOpen} onOpenChange={setCheckoutOpen}>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Checkout</DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={handleCheckout} className="space-y-4">
+                      <div>
+                        <Label htmlFor="name">Full Name</Label>
+                        <Input
+                          id="name"
+                          value={customerInfo.name}
+                          onChange={(e) => setCustomerInfo({ ...customerInfo, name: e.target.value })}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="email">Email</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          value={customerInfo.email}
+                          onChange={(e) => setCustomerInfo({ ...customerInfo, email: e.target.value })}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="phone">Phone</Label>
+                        <Input
+                          id="phone"
+                          type="tel"
+                          value={customerInfo.phone}
+                          onChange={(e) => setCustomerInfo({ ...customerInfo, phone: e.target.value })}
+                          required
+                        />
+                      </div>
+                      <div className="pt-4 border-t">
+                        <div className="flex justify-between text-lg font-bold mb-4">
+                          <span>Total:</span>
+                          <span className="text-primary">${cartTotal.toFixed(2)}</span>
+                        </div>
+                        <Button type="submit" className="w-full">
+                          Place Order
+                        </Button>
+                      </div>
+                    </form>
+                  </DialogContent>
+                </Dialog>
                 
                 <p className="text-sm text-muted-foreground text-center">
                   Free shipping on all orders

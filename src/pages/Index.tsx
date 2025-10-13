@@ -4,10 +4,11 @@ import { Button } from '@/components/ui/button';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import ProductCard from '@/components/ProductCard';
-import { products } from '@/data/products';
+import { useProducts } from '@/contexts/ProductsContext';
 import heroImage from '@/assets/hero-organic.jpg';
 
 const Index = () => {
+  const { products } = useProducts();
   const featuredProducts = products.slice(0, 4);
 
   return (
