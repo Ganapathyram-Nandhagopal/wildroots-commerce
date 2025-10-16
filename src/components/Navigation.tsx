@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingBag, Menu, X, Leaf } from 'lucide-react';
+import { ShoppingBag, Menu, X, Leaf, Shield } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
 
@@ -57,16 +57,23 @@ const Navigation = () => {
             ))}
           </div>
 
-          <Link to="/cart" className="relative group hidden md:block">
-            <Button variant="ghost" size="icon" className="relative">
-              <ShoppingBag className="w-5 h-5 transition-transform group-hover:scale-110" />
-              {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-scale-in">
-                  {cartCount}
-                </span>
-              )}
-            </Button>
-          </Link>
+          <div className="hidden md:flex items-center gap-2">
+            <Link to="/cart" className="relative group">
+              <Button variant="ghost" size="icon" className="relative">
+                <ShoppingBag className="w-5 h-5 transition-transform group-hover:scale-110" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-scale-in">
+                    {cartCount}
+                  </span>
+                )}
+              </Button>
+            </Link>
+            <Link to="/admin/login">
+              <Button variant="ghost" size="icon" className="relative group">
+                <Shield className="w-5 h-5 transition-transform group-hover:scale-110" />
+              </Button>
+            </Link>
+          </div>
 
           <button
             className="md:hidden text-foreground"
@@ -98,6 +105,14 @@ const Navigation = () => {
               >
                 <ShoppingBag className="w-5 h-5" />
                 Cart {cartCount > 0 && `(${cartCount})`}
+              </Link>
+              <Link
+                to="/admin/login"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-2 font-inter font-medium py-2 text-foreground"
+              >
+                <Shield className="w-5 h-5" />
+                Admin Panel
               </Link>
             </div>
           </div>
